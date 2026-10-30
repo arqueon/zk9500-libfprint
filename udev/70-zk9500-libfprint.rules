@@ -1,0 +1,5 @@
+# ZKTeco ZK9500 (1b55:0124) — acceso para sesión activa (uaccess) y desactivar autosuspend USB
+ACTION=="add|change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="1b55", ATTR{idProduct}=="0124", TAG+="uaccess", TEST=="power/control", ATTR{power/control}="on"
+
+# Chipsailing CS9711 (2541:0236) — mantener despierto (evita desconexión por autosuspend USB)
+ACTION=="add|change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2541", ATTR{idProduct}=="0236", TEST=="power/control", ATTR{power/control}="on"

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        variant:
+          - upstream-libfprint
+          - cs9711-combined
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake git meson ninja-build pkg-config python3 \
+            libglib2.0-dev libgusb-dev libusb-1.0-0-dev libpixman-1-dev \
+            libnss3-dev libssl-dev libgudev-1.0-dev libudev-dev udev \
+            libcairo2-dev libopencv-dev
+
+      - name: Validate helper tools
+        run: |
+          cc -O2 -Wall -Wextra -Werror tools/zk9500-probe.c -o /tmp/zk9500-probe $(pkg-config --cflags --libs libusb-1.0)
+          python3 -m py_compile tools/zk9500-fprintd
+
+      - name: Build and test (${{ matrix.variant }})
+        run: |
+          mkdir -p /tmp/ci-src
+          if [ "${{ matrix.variant }}" = "cs9711-combined" ]; then
+            git clone --depth 1 --branch cs9711-rebase https://github.com/archeYR/libfprint-CS9711.git /tmp/ci-src/libfprint
+            patch -d /tmp/ci-src/libfprint -Np1 -i "$GITHUB_WORKSPACE/patches/0001-build-zk9500-opencv5-udev.patch"
+          else
+            git clone --depth 1 https://gitlab.freedesktop.org/libfprint/libfprint.git /tmp/ci-src/libfprint
+            patch -d /tmp/ci-src/libfprint -Np1 -i "$GITHUB_WORKSPACE/patches/0001-upstream-libfprint-zk9500.patch"
+          fi
+          install -Dm644 drivers/zk9500.c /tmp/ci-src/libfprint/libfprint/drivers/zk9500.c
+          meson setup /tmp/ci-build /tmp/ci-src/libfprint \
+            -Dintrospection=false -Ddoc=false -Dgtk-examples=false -Dinstalled-tests=false
+          meson compile -C /tmp/ci-build
+          meson test -C /tmp/ci-build --suite unit-tests --print-errorlogs
+          /tmp/ci-build/libfprint/fprint-list-supported-devices | grep -q "1b55:0124"
+          if [ "${{ matrix.variant }}" = "cs9711-combined" ]; then
+            /tmp/ci-build/libfprint/fprint-list-supported-devices | grep -q "2541:0236"
+          fi

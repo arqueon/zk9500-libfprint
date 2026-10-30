@@ -1,0 +1,12 @@
+build/
+pkg/
+src/
+*.pkg.tar.*
+*.o
+*.so
+*.so.*
+*.pgm
+__pycache__/
+*.pyc
+tools/zk9500-probe
+.DS_Store
