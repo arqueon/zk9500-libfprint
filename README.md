@@ -81,21 +81,20 @@ Make sure `fprintd` is installed via your distribution's package manager (`sudo 
 
 ### Arch Linux / CachyOS / Manjaro / EndeavourOS
 
-#### Option A — ZK9500 + Chipsailing CS9711 + all upstream drivers (OpenCV 4 & 5 compatible)
+#### Option A — Install directly from AUR (`libfprint-zk9500-git`, recommended)
+Builds upstream `libfprint` with the native ZKTeco ZK9500 (`1b55:0124`) driver, udev power rules, and helper tools (no OpenCV dependency):
+```bash
+paru -S libfprint-zk9500-git
+# or: yay -S libfprint-zk9500-git
+sudo systemctl restart fprintd.service
+```
+AUR package page: [`https://aur.archlinux.org/packages/libfprint-zk9500-git`](https://aur.archlinux.org/packages/libfprint-zk9500-git)
+
+#### Option B — Combined build: ZK9500 + Chipsailing CS9711 + all upstream drivers (OpenCV 4 & 5 compatible)
 ```bash
 git clone https://github.com/arqueon/zk9500-libfprint.git
 cd zk9500-libfprint
 ./instalar.sh
-```
-
-#### Option B — Vanilla upstream `libfprint` + ZK9500 only (no OpenCV dependency)
-```bash
-git clone https://github.com/arqueon/zk9500-libfprint.git
-cd zk9500-libfprint/packaging/arch-upstream
-makepkg -si
-sudo systemd-hwdb update && sudo udevadm control --reload
-sudo udevadm trigger --action=change --subsystem-match=usb --attr-match=idVendor=1b55
-sudo systemctl restart fprintd.service
 ```
 
 ### Ubuntu / Debian / Linux Mint / Pop!_OS

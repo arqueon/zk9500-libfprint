@@ -50,21 +50,20 @@ Todas las transferencias de control usan peticiones `Vendor · Device` en `EP0` 
 
 ### Arch Linux / CachyOS / Manjaro / EndeavourOS
 
-#### Opción A — Combinado: ZK9500 + Chipsailing CS9711 + lectores estándar (compatible con OpenCV 4 y 5)
+#### Opción A — Instalar directamente desde AUR (`libfprint-zk9500-git`, recomendado)
+Compila `libfprint` oficial con el driver nativo del ZKTeco ZK9500 (`1b55:0124`), reglas udev y herramientas auxiliares (sin dependencia de OpenCV):
+```bash
+paru -S libfprint-zk9500-git
+# o bien: yay -S libfprint-zk9500-git
+sudo systemctl restart fprintd.service
+```
+Página en AUR: [`https://aur.archlinux.org/packages/libfprint-zk9500-git`](https://aur.archlinux.org/packages/libfprint-zk9500-git)
+
+#### Opción B — Combinado: ZK9500 + Chipsailing CS9711 + lectores estándar (compatible con OpenCV 4 y 5)
 ```bash
 git clone https://github.com/arqueon/zk9500-libfprint.git
 cd zk9500-libfprint
 ./instalar.sh
-```
-
-#### Opción B — Solo `libfprint` oficial + ZK9500 (sin dependencia de OpenCV)
-```bash
-git clone https://github.com/arqueon/zk9500-libfprint.git
-cd zk9500-libfprint/packaging/arch-upstream
-makepkg -si
-sudo systemd-hwdb update && sudo udevadm control --reload
-sudo udevadm trigger --action=change --subsystem-match=usb --attr-match=idVendor=1b55
-sudo systemctl restart fprintd.service
 ```
 
 ### Ubuntu / Debian / Linux Mint / Pop!_OS

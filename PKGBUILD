@@ -8,9 +8,9 @@ url="https://github.com/arqueon/zk9500-libfprint"
 license=('LGPL-2.1-or-later')
 groups=('fprint')
 depends=(
-  'gcc-libs'
   'glib2'
   'glibc'
+  'libgcc'
   'libgudev'
   'libgusb'
   'libusb'
@@ -19,11 +19,13 @@ depends=(
   'pixman'
 )
 optdepends=(
+  'fprintd: D-Bus daemon and PAM module for fingerprint authentication'
   'python-gobject: for zk9500-fprintd multi-reader enrollment and PAM status CLI'
 )
 makedepends=(
   'cmake'
   'git'
+  'glib2-devel'
   'meson'
   'ninja'
   'pkgconf'
