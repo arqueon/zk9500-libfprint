@@ -1,7 +1,7 @@
 # Maintainer: arqueon <66568719+arqueon@users.noreply.github.com>
 pkgname=libfprint-cs9711-zk9500-git
-pkgver=1.94.10+1.r1866.20260216.02b285c
-pkgrel=1
+pkgver=1.94.10+1.r1866.20260217.02b285c
+pkgrel=2
 pkgdesc="libfprint-2 with ZKTeco ZK9500 (1b55:0124) and Chipsailing CS9711 (2541:0236) support (OpenCV 4/5 compatible)"
 arch=('x86_64' 'aarch64')
 url="https://github.com/arqueon/zk9500-libfprint"

@@ -1103,6 +1103,10 @@ fpi_device_zk9500_class_init (FpiDeviceZk9500Class *klass)
   dev_class->id_table = id_table;
   dev_class->scan_type = FP_SCAN_TYPE_PRESS;
   dev_class->nr_enroll_stages = 5;
+  /* Desktop optical prism + CMOS sensor has no resistive heater; disable
+   * libfprint's default 180s software thermal lockout (FP_DEVICE_ERROR_TOO_HOT)
+   * so multi-finger enrollment and lockscreen standby never trip overheating. */
+  dev_class->temp_hot_seconds = -1;
 
   img_class->img_width = ZK9500_WIDTH;
   img_class->img_height = ZK9500_HEIGHT;

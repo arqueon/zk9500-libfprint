@@ -600,20 +600,40 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def format_dbus_error(err: GLib.Error) -> str:
+    msg = err.message or str(err)
+    if "AlreadyOpen" in msg:
+        return "El lector está ocupado por otra sesión de fprintd (ej. pantalla de bloqueo u otra terminal). Ciérrala e inténtalo de nuevo."
+    if "TooHot" in msg or "overheating" in msg.lower():
+        return (
+            "fprintd bloqueó temporalmente el lector por su estimador térmico de software (FP_DEVICE_ERROR_TOO_HOT). "
+            "Actualiza el driver con temp_hot_seconds = -1 o reinicia fprintd.service."
+        )
+    if "PermissionDenied" in msg:
+        return "Permiso denegado por Polkit para operar fprintd."
+    if "NoEnrolledPrints" in msg:
+        return "No hay huellas registradas para este usuario en el lector seleccionado."
+    return f"Error de fprintd (D-Bus): {msg}"
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     args.user = getattr(args, "user", None) or getpass.getuser()
     args.device = getattr(args, "device", None) or "zk9500"
     cmd = args.cmd or "status"
-    if cmd == "status":
-        return cmd_status(args)
-    if cmd == "enroll":
-        return cmd_enroll(args)
-    if cmd == "verify":
-        return cmd_verify(args)
-    if cmd == "delete":
-        return cmd_delete(args)
+    try:
+        if cmd == "status":
+            return cmd_status(args)
+        if cmd == "enroll":
+            return cmd_enroll(args)
+        if cmd == "verify":
+            return cmd_verify(args)
+        if cmd == "delete":
+            return cmd_delete(args)
+    except GLib.Error as err:
+        print(f"Error: {format_dbus_error(err)}", file=sys.stderr)
+        return 1
     parser.print_help()
     return 1
 

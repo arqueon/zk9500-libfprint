@@ -1,7 +1,7 @@
 # Maintainer: arqueon <66568719+arqueon@users.noreply.github.com>
 pkgname=libfprint-zk9500-git
 pkgver=1.94.10.r0.g0000000
-pkgrel=1
+pkgrel=2
 pkgdesc="Upstream libfprint-2 with native ZKTeco ZK9500 (1b55:0124) optical fingerprint reader support"
 arch=('x86_64' 'aarch64')
 url="https://github.com/arqueon/zk9500-libfprint"
